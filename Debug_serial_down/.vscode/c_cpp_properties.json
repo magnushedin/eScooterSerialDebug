@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "/usr/local/arduino-1.8.5/tools/**",
+                "/usr/local/arduino-1.8.5/hardware/arduino/avr/**"
+            ],
+            "forcedInclude": [
+                "/usr/local/arduino-1.8.5/hardware/arduino/avr/cores/arduino/Arduino.h"
+            ],
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
+                    "/usr/local/arduino-1.8.5/tools/**",
+                    "/usr/local/arduino-1.8.5/hardware/arduino/avr/**"
+                ]
+            },
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 3
+}
