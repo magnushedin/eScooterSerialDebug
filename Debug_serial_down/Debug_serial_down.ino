@@ -5,7 +5,7 @@ U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
 byte prevByte = 0;
 byte thisByte = 0;
-byte inByte[11] = {0xAA,0x0A,0x8B,0xF1,0x01,0x0B,0x0B,0x55,0x66};
+byte inByte[9] = {0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA};
 int cnt = 0;
 int pos = 0;
 unsigned int velocity = 0;
@@ -65,13 +65,45 @@ void loop() {
   // Debug
   u8g2.setFont(u8g_font_10x20);
 
-  // Power?
+  // TPS?
   u8g2.setCursor(0,50);
-  u8g2.print(inByte[1], HEX);
+  u8g2.print(inByte[2], HEX);
   u8g2.setCursor(25,50);
-  u8g2.print(inByte[1], DEC);
-  
+  u8g2.print(inByte[2], DEC);
+
+  // eco
+  u8g2.setFont(u8g_font_5x7);
+  u8g2.setCursor(0, 29);
+  if (inByte[6] & 0x01) {
+    u8g2.print("std");
+  }
+  else {
+    u8g2.print("eco");
+  }
+
+  // Light
+  u8g2.setFont(u8g_font_5x7);
+  u8g2.setCursor(30, 29);
+  if (inByte[6] & 0x80)
+  {
+    u8g2.print("Light on");
+  }
+  else
+  {
+    u8g2.print("Light off");
+  }
+
+  // Break
+  u8g2.setFont(u8g_font_5x7);
+  u8g2.setCursor(60, 29);
+  if (inByte[6] & 0x20)
+  {
+    u8g2.print("breaking");
+  }
+
+
   // Break?
+  /*
   u8g2.setCursor(0,64);
   u8g2.print(inByte[6], HEX);
   u8g2.setCursor(25,64);
@@ -91,6 +123,7 @@ void loop() {
   u8g2.setCursor(80,64);
   //u8g2.print(((float)((velocity*60)*(0.225*3.14)))/10, 1);
   u8g2.print(((float)(map(velocity,0,1024,0,440))/10), 1);
+  */
 
   // Send to screen
   u8g2.sendBuffer();
