@@ -95,7 +95,7 @@ void loop() {
 
   // Break
   u8g2.setFont(u8g_font_5x7);
-  u8g2.setCursor(60, 29);
+  u8g2.setCursor(80, 29);
   if (inByte[6] & 0x20)
   {
     u8g2.print("breaking");
