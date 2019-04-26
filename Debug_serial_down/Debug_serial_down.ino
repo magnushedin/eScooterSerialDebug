@@ -1,17 +1,27 @@
 #include <U8g2lib.h>
 #include <Wire.h>
+#include <TimerOne.h>
 
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
+#define BUTTON_PIN 2
+#define THROTTLE_PIN A0
+#define BREAK_BIT 0x20
+
 byte prevByte = 0;
 byte thisByte = 0;
-byte inByte[9] = {0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA};
+byte inByte[9] = { 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA };
+byte outByte[9] = { 0xFF, 0xAA, 0x00, 0x32, 0x01, 0x00, 0x00, 0x03, 0x00 };
 int cnt = 0;
 int pos = 0;
-unsigned int velocity = 0;
-unsigned int battVolt = 0;
+int throttleValue = 0;
+byte throttleValue_byte = 0x00; 
 
 void setup() {
+  pinMode(BUTTON_PIN, INPUT);
+  pinMode(THROTTLE_PIN, INPUT);
+  Timer1.initialize(100000);
+  Timer1.attachInterrupt(serialSender);
   Serial.begin(9600);
   while(!Serial) {}
   u8g2.begin();
@@ -22,11 +32,43 @@ void setup() {
   u8g2.sendBuffer();
 
   // Wait for serial buss to start
-  while (!Serial.available()) {}
+  //while (!Serial.available()) {}
   delay(1000);
 }
 
+void serialSender()
+{
+  // Init serial output
+  //outByte[3] = 0x00; // Throttle
+  outByte[7] = 0x03; // Data
+  outByte[8] = 0x00;
+  
+  // Create serial output
+  if (digitalRead(BUTTON_PIN) == LOW)
+  {
+    outByte[7] = outByte[7] | BREAK_BIT;
+  }
+
+  throttleValue = analogRead(THROTTLE_PIN);
+  throttleValue_byte = map(throttleValue, 0, 1023, 5, 290);
+
+  outByte[3] = throttleValue_byte;
+
+  // Checksum
+  for (int i = 0; i < 8; i++)
+  {
+    outByte[8] += outByte[i];
+  }
+
+  for (int i = 0; i < 9; i++)
+  {
+    Serial.write(outByte[i]);
+    }
+}
+
 void loop() {
+
+
   // Read serial message
   while(Serial.available() > 0) {
     prevByte = thisByte;
@@ -44,11 +86,11 @@ void loop() {
   u8g2.clearBuffer();
   u8g2.setFont(u8g_font_5x7);
 
-  // Serial message DEC
+  // My own serial message to be sent
   pos = 0;
-  for (int i = 1; i<8; i++) {
+  for (int i = 2; i<9; i++) {
     u8g2.setCursor(pos,6);
-    u8g2.print(inByte[i], DEC);
+    u8g2.print(outByte[i], HEX);
     pos += 17;
     //Serial.print(inByte[i]);
   }
