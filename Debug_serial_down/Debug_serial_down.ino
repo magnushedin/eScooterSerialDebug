@@ -15,7 +15,9 @@ byte outByte[9] = { 0xFF, 0xAA, 0x00, 0x32, 0x01, 0x00, 0x00, 0x03, 0x00 };
 int cnt = 0;
 int pos = 0;
 int throttleValue = 0;
-byte throttleValue_byte = 0x00; 
+byte throttleValue_byte = 0x00;
+unsigned int velocity = 0;
+unsigned int battVolt = 0;
 
 void setup() {
   pinMode(BUTTON_PIN, INPUT);
@@ -107,6 +109,7 @@ void loop() {
   // Debug
   u8g2.setFont(u8g_font_10x20);
 
+  /*
   // TPS?
   u8g2.setCursor(0,50);
   u8g2.print(inByte[2], HEX);
@@ -143,9 +146,9 @@ void loop() {
     u8g2.print("breaking");
   }
 
-
+*/
   // Break?
-  /*
+  
   u8g2.setCursor(0,64);
   u8g2.print(inByte[6], HEX);
   u8g2.setCursor(25,64);
@@ -165,7 +168,7 @@ void loop() {
   u8g2.setCursor(80,64);
   //u8g2.print(((float)((velocity*60)*(0.225*3.14)))/10, 1);
   u8g2.print(((float)(map(velocity,0,1024,0,440))/10), 1);
-  */
+  
 
   // Send to screen
   u8g2.sendBuffer();
